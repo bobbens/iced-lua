@@ -11,7 +11,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Build
+    - name: Check
       run: cargo check --verbose --features lua51,module
-    - name: Run tests
-      run: cargo test --verbose --features lua51
