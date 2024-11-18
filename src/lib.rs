@@ -667,6 +667,7 @@ impl App {
     }
 }
 
+#[cfg(not(feature = "module"))]
 pub fn open_iced(lua: &mlua::Lua) -> mlua::Result<()> {
     let iced = iced_table(lua)?;
     let globals = lua.globals();
