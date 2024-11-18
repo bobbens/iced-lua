@@ -1,10 +1,10 @@
 #![crate_type = "lib"]
 #![crate_name = "iced_lua"]
 
-#[cfg(feature = "module")]
-use mlua::prelude::*;
 use iced::Renderer;
 use iced_core::Theme;
+#[cfg(feature = "module")]
+use mlua::prelude::*;
 
 macro_rules! lua_wrapper_min {
     ($wrapper: ident, $wrapped: ty) => {
@@ -79,7 +79,11 @@ pub struct Message(mlua::Value);
 impl mlua::UserData for Message {}
 impl_fromlua_for!(Message);
 unsafe impl Send for Message {}
-impl Default for Message { fn default () -> Self { Message(mlua::Value::Nil) } }
+impl Default for Message {
+    fn default() -> Self {
+        Message(mlua::Value::Nil)
+    }
+}
 
 // Wrapper for Length
 lua_wrapper_min!(LuaLength, iced::Length);
@@ -309,10 +313,7 @@ impl mlua::UserData for LuaElement {}
 impl_element_for!(LuaText, LuaButton, LuaContainer, LuaColumn);
 
 // Text Wrapper
-lua_wrapper!(
-    LuaText,
-    iced_widget::Text<'static, Theme, Renderer>
-);
+lua_wrapper!(LuaText, iced_widget::Text<'static, Theme, Renderer>);
 impl mlua::UserData for LuaText {
     fn add_methods<M: mlua::UserDataMethods<Self>>(methods: &mut M) {
         methods.add_function_mut("size", |_lua, (this, size): (Self, LuaPixels)| {
@@ -457,7 +458,7 @@ fn value_to_element(
         mlua::Value::UserData(ud) => {
             if ud.is::<LuaText>() {
                 Ok(ud.take::<LuaText>()?.into())
-            }else if ud.is::<LuaButton>() {
+            } else if ud.is::<LuaButton>() {
                 Ok(ud.take::<LuaButton>()?.into())
             } else if ud.is::<LuaColumn>() {
                 Ok(ud.take::<LuaColumn>()?.into())
@@ -617,18 +618,26 @@ pub fn iced_table(lua: &mlua::Lua) -> mlua::Result<mlua::Table> {
             Ok(LuaButton(iced_widget::button(value_to_element(val)?)))
         })?,
     )?;
-    iced.set("run",
-        lua.create_function(|_lua, (title, update, view): (String, mlua::Function, mlua::Function)| -> mlua::Result<()> {
-            let app = App {
-                title,
-                update,
-                view,
-            };
-            match iced::application( App::title, App::update, App::view ).run_with( || (app, iced::Task::none()) ) {
-                Ok(_) => Ok(()),
-                Err(e) => Err(mlua::Error::RuntimeError( format!("{}",e) )),
-            }
-        })? )?;
+    iced.set(
+        "run",
+        lua.create_function(
+            |_lua,
+             (title, update, view): (String, mlua::Function, mlua::Function)|
+             -> mlua::Result<()> {
+                let app = App {
+                    title,
+                    update,
+                    view,
+                };
+                match iced::application(App::title, App::update, App::view)
+                    .run_with(|| (app, iced::Task::none()))
+                {
+                    Ok(_) => Ok(()),
+                    Err(e) => Err(mlua::Error::RuntimeError(format!("{}", e))),
+                }
+            },
+        )?,
+    )?;
     Ok(iced)
 }
 
@@ -639,29 +648,29 @@ pub struct App {
     view: mlua::Function,
 }
 impl App {
-    fn title( &self ) -> String {
+    fn title(&self) -> String {
         self.title.clone()
     }
-    fn update( &mut self, message: Message) -> iced::Task<Message> {
+    fn update(&mut self, message: Message) -> iced::Task<Message> {
         match self.update.call::<()>(message.0) {
             Ok(_) => (),
-            Err(e) => panic!("{}",e),
+            Err(e) => panic!("{}", e),
         }
         iced::Task::none()
     }
     fn view(&self) -> iced_core::Element<Message, Theme, Renderer> {
         let val = match self.view.call::<mlua::Value>(()) {
             Ok(v) => v,
-            Err(e) => panic!("{}",e),
+            Err(e) => panic!("{}", e),
         };
-        value_to_element( val ).unwrap()
+        value_to_element(val).unwrap()
     }
 }
 
 pub fn open_iced(lua: &mlua::Lua) -> mlua::Result<()> {
-    let iced = iced_table( lua )?;
+    let iced = iced_table(lua)?;
     let globals = lua.globals();
-    globals.set( "iced", iced )?;
+    globals.set("iced", iced)?;
     Ok(())
 }
 
