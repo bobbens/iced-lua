@@ -74,6 +74,8 @@ macro_rules! impl_fromlua_for {
 pub struct Message(mlua::Value);
 impl mlua::UserData for Message {}
 impl_fromlua_for!(Message);
+unsafe impl Send for Message {}
+impl Default for Message { fn default () -> Self { Message(mlua::Value::Nil) } }
 
 // Wrapper for Length
 lua_wrapper_min!(LuaLength, iced::Length);
@@ -597,8 +599,7 @@ pub fn iced_table(lua: &mlua::Lua) -> mlua::Result<mlua::Table> {
                 update,
                 view,
             };
-            //iced::run( app.title.as_str(), app.update, app.view );
-            iced::run( app.title.as_str(), App::update, App::view );
+            iced::application( App::title, App::update, App::view ).run_with( || (app, iced::Task::none()) );
             Ok(())
         })? )?;
     Ok(iced)
@@ -611,6 +612,9 @@ pub struct App {
     view: mlua::Function,
 }
 impl App {
+    fn title( &self ) -> String {
+        self.title.clone()
+    }
     fn update( &mut self, message: Message) -> iced::Task<Message> {
         self.update.call::<()>(message.0).unwrap();
         iced::Task::none()

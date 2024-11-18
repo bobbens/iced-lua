@@ -17,7 +17,7 @@ lua51 = ["mlua/lua51"]
 luajit = ["mlua/luajit"]
 
 [dependencies]
-mlua = { version = "0", features = ["module","send"] }
+mlua = { version = "0", features = ["module"] }
 iced = { git = "https://github.com/iced-rs/iced", features=["advanced"] }
 iced_core = { git = "https://github.com/iced-rs/iced", features=["advanced"] }
 iced_widget = { git = "https://github.com/iced-rs/iced", features=["advanced"] }
