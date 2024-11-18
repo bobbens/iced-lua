@@ -599,8 +599,10 @@ pub fn iced_table(lua: &mlua::Lua) -> mlua::Result<mlua::Table> {
                 update,
                 view,
             };
-            iced::application( App::title, App::update, App::view ).run_with( || (app, iced::Task::none()) );
-            Ok(())
+            match iced::application( App::title, App::update, App::view ).run_with( || (app, iced::Task::none()) ) {
+                Ok(_) => Ok(()),
+                Err(e) => Err(mlua::Error::RuntimeError( format!("{}",e) )),
+            }
         })? )?;
     Ok(iced)
 }
