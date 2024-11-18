@@ -676,6 +676,6 @@ pub fn open_iced(lua: &mlua::Lua) -> mlua::Result<()> {
 
 #[cfg(feature = "module")]
 #[mlua::lua_module]
-fn rust_module(lua: &Lua) -> LuaResult<LuaTable> {
+fn iced_lua(lua: &Lua) -> LuaResult<LuaTable> {
     iced_table(lua)
 }
