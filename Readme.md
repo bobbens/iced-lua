@@ -37,7 +37,7 @@ See [examples/counter](examples/counter) for the full example of embedding into 
 
 ## TODO
 
-- [x]: Proof of concept.
-- [ ]: Finish implementing the API.
-- [ ]: Try to fix the Send issues.
-- [ ]: Maybe figure out how to use with [love2d](https://www.love2d.org/) if possible?
+- [x] Proof of concept.
+- [ ] Finish implementing the API.
+- [ ] Try to fix the Send issues.
+- [ ] Maybe figure out how to use with [love2d](https://www.love2d.org/) if possible?
