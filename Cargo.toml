@@ -5,6 +5,7 @@ authors = ["Edgar Simo-Serra <bobbens@gmail.com>"]
 edition = "2021"
 
 [lib]
+name = "iced_lua"
 crate-type = ["cdylib","rlib"]
 
 [workspace]

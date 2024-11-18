@@ -23,6 +23,6 @@ dependencies = {
 build = {
     type = "rust-mlua",
     modules = {
-        "ryaml"
+        "iced_lua",
     },
 }
