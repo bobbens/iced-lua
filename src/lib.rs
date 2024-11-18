@@ -1,3 +1,7 @@
+#![crate_type = "lib"]
+#![crate_name = "iced_lua"]
+
+#[cfg(feature = "module")]
 use mlua::prelude::*;
 use iced::Renderer;
 use iced_core::Theme;
@@ -302,7 +306,20 @@ impl mlua::UserData for LuaContainerStyle {
 // Element Wrapper
 lua_wrapper!(LuaElement, iced::Element<'static, Message, Theme, Renderer>);
 impl mlua::UserData for LuaElement {}
-impl_element_for!(LuaButton, LuaContainer, LuaColumn);
+impl_element_for!(LuaText, LuaButton, LuaContainer, LuaColumn);
+
+// Text Wrapper
+lua_wrapper!(
+    LuaText,
+    iced_widget::Text<'static, Theme, Renderer>
+);
+impl mlua::UserData for LuaText {
+    fn add_methods<M: mlua::UserDataMethods<Self>>(methods: &mut M) {
+        methods.add_function_mut("size", |_lua, (this, size): (Self, LuaPixels)| {
+            Ok(LuaText(this.0.size(size)))
+        });
+    }
+}
 
 // Button Wrapper
 lua_wrapper!(
@@ -438,7 +455,9 @@ fn value_to_element(
     match val {
         mlua::Value::String(s) => Ok(iced_widget::text(s.to_string_lossy()).into()),
         mlua::Value::UserData(ud) => {
-            if ud.is::<LuaButton>() {
+            if ud.is::<LuaText>() {
+                Ok(ud.take::<LuaText>()?.into())
+            }else if ud.is::<LuaButton>() {
                 Ok(ud.take::<LuaButton>()?.into())
             } else if ud.is::<LuaColumn>() {
                 Ok(ud.take::<LuaColumn>()?.into())
@@ -587,6 +606,12 @@ pub fn iced_table(lua: &mlua::Lua) -> mlua::Result<mlua::Table> {
         })?,
     )?;
     iced.set(
+        "text",
+        lua.create_function(|_lua, txt: String| -> mlua::Result<LuaText> {
+            Ok(LuaText(iced_widget::text(txt)))
+        })?,
+    )?;
+    iced.set(
         "button",
         lua.create_function(|_lua, val: mlua::Value| -> mlua::Result<LuaButton> {
             Ok(LuaButton(iced_widget::button(value_to_element(val)?)))
@@ -618,11 +643,18 @@ impl App {
         self.title.clone()
     }
     fn update( &mut self, message: Message) -> iced::Task<Message> {
-        self.update.call::<()>(message.0).unwrap();
+        match self.update.call::<()>(message.0) {
+            Ok(_) => (),
+            Err(e) => panic!("{}",e),
+        }
         iced::Task::none()
     }
     fn view(&self) -> iced_core::Element<Message, Theme, Renderer> {
-        value_to_element( self.view.call::<mlua::Value>(()).unwrap() ).unwrap()
+        let val = match self.view.call::<mlua::Value>(()) {
+            Ok(v) => v,
+            Err(e) => panic!("{}",e),
+        };
+        value_to_element( val ).unwrap()
     }
 }
 
@@ -633,6 +665,7 @@ pub fn open_iced(lua: &mlua::Lua) -> mlua::Result<()> {
     Ok(())
 }
 
+#[cfg(feature = "module")]
 #[mlua::lua_module]
 fn rust_module(lua: &Lua) -> LuaResult<LuaTable> {
     iced_table(lua)

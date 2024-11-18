@@ -1,0 +1,10 @@
+[package]
+name = "counter"
+version = "1.0.0"
+authors = ["Edgar Simo-Serra <bobbens@gmail.com>"]
+edition = "2021"
+publish = false
+
+[dependencies]
+iced_lua = { path = "../..", features = ["lua51"] }
+mlua = { version = "0", features = ["lua51","vendored"] }

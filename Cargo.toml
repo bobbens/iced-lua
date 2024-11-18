@@ -1,13 +1,16 @@
 [package]
-name = "rust_module"
+name = "iced_lua"
 version = "0.0.1"
 authors = ["Edgar Simo-Serra <bobbens@gmail.com>"]
 edition = "2021"
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib","rlib"]
 
 [workspace]
+members = [
+   "examples/*",
+]
 
 [features]
 lua54 = ["mlua/lua54"]
@@ -15,9 +18,10 @@ lua53 = ["mlua/lua53"]
 lua52 = ["mlua/lua52"]
 lua51 = ["mlua/lua51"]
 luajit = ["mlua/luajit"]
+module = ["mlua/module"]
 
 [dependencies]
-mlua = { version = "0", features = ["module"] }
+mlua = "0"
 iced = { git = "https://github.com/iced-rs/iced", features=["advanced"] }
 iced_core = { git = "https://github.com/iced-rs/iced", features=["advanced"] }
 iced_widget = { git = "https://github.com/iced-rs/iced", features=["advanced"] }
