@@ -5,11 +5,19 @@ The goal is to create a Lua package that can use most of the iced API and be eit
 
 **This is currently very much WIP, however, it is working as a proof of concept. Help is very much welcome.**
 
-## Usage
+## Module Usage
 
-Example of the counter example from iced in Lua.
+Install using luarocks with:
+
+```bash
+$ luarocks install iced-lua
+```
+
+You should now be able to `require "iced-lua"` from Lua. With this, we can now reproduce the counter example from iced in Lua.
 
 ```lua
+local iced = require "iced_lua"
+
 local value = 0
 
 local function update( message )
@@ -31,6 +39,22 @@ local function view ()
 end
 
 iced.run( "A cooler counter", update, view )
+```
+
+## Embedding Usage
+
+You will have to add the following dependencies. Note that there is no restriction on the version of Lua, so you are able to use any Lua feature version supported by mlua.
+
+```toml
+[dependencies]
+iced_lua = { path = "../..", features = ["lua51"] }
+mlua = { version = "0.10", features = ["lua51","vendored"] }
+```
+
+Afterwards, you can simply use the following to load the library into a `mlua::Lua` environment:
+
+```rust
+    iced_lua::open_iced(&lua).unwrap();
 ```
 
 See [examples/counter](examples/counter) for the full example of embedding into a rust application.

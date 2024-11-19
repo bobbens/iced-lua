@@ -7,4 +7,4 @@ publish = false
 
 [dependencies]
 iced_lua = { path = "../..", features = ["lua51"] }
-mlua = { version = "0", features = ["lua51","vendored"] }
+mlua = { version = "0.10", features = ["lua51","vendored"] }

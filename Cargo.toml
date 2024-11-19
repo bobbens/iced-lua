@@ -22,7 +22,8 @@ luajit = ["mlua/luajit"]
 module = ["mlua/module"]
 
 [dependencies]
-mlua = "0"
+mlua = "0.10"
+# iced 0.14.0-dev
 iced = { git = "https://github.com/iced-rs/iced", features=["advanced"] }
 iced_core = { git = "https://github.com/iced-rs/iced", features=["advanced"] }
 iced_widget = { git = "https://github.com/iced-rs/iced", features=["advanced"] }
