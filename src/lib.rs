@@ -449,7 +449,7 @@ impl mlua::UserData for LuaContainer {
     }
 }
 
-fn value_to_element(
+pub fn value_to_element(
     val: mlua::Value,
 ) -> mlua::Result<iced::Element<'static, Message, Theme, Renderer>> {
     //dbg!(&val);
