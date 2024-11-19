@@ -1436,6 +1436,7 @@ version = "0.0.1"
 dependencies = [
  "iced",
  "iced_core",
+ "iced_wgpu",
  "iced_widget",
  "mlua",
 ]

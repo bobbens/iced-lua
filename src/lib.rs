@@ -1,8 +1,11 @@
 #![crate_type = "lib"]
 #![crate_name = "iced_lua"]
 
+#[cfg(not(feature = "wgpu"))]
 use iced::Renderer;
 use iced_core::Theme;
+#[cfg(feature = "wgpu")]
+use iced_wgpu::Renderer;
 #[cfg(feature = "module")]
 use mlua::prelude::*;
 
@@ -75,7 +78,7 @@ macro_rules! impl_fromlua_for {
 }
 
 #[derive(Debug, Clone)]
-pub struct Message(mlua::Value);
+pub struct Message(pub mlua::Value);
 impl mlua::UserData for Message {}
 impl_fromlua_for!(Message);
 unsafe impl Send for Message {}

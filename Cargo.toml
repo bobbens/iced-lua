@@ -20,6 +20,7 @@ lua52 = ["mlua/lua52"]
 lua51 = ["mlua/lua51"]
 luajit = ["mlua/luajit"]
 module = ["mlua/module"]
+wgpu = ["dep:iced_wgpu"]
 
 [dependencies]
 mlua = "0.10"
@@ -27,3 +28,4 @@ mlua = "0.10"
 iced = { git = "https://github.com/iced-rs/iced", features=["advanced"] }
 iced_core = { git = "https://github.com/iced-rs/iced", features=["advanced"] }
 iced_widget = { git = "https://github.com/iced-rs/iced", features=["advanced"] }
+iced_wgpu = { git = "https://github.com/iced-rs/iced", optional=true }
