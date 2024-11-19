@@ -622,35 +622,31 @@ pub fn exports_table(lua: &mlua::Lua) -> mlua::Result<mlua::Table> {
         })?,
     )?;
     iced.set(
-        "run",
+        "application",
         lua.create_function(
             |_lua,
-             (title, update, view): (String, mlua::Function, mlua::Function)|
-             -> mlua::Result<()> {
-                let app = App {
-                    title,
-                    update,
-                    view,
-                };
-                match iced::application(App::title, App::update, App::view)
-                    .run_with(|| (app, iced::Task::none()))
-                {
-                    Ok(_) => Ok(()),
-                    Err(e) => Err(mlua::Error::RuntimeError(format!("{}", e))),
-                }
-            },
-        )?,
+             (title, update, view): (String, mlua::Function, mlua::Function)| {
+            Ok(LuaApplication::new( title, update, view ))
+        })?,
     )?;
     Ok(iced)
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct App {
+pub struct LuaApplication {
     title: String,
     update: mlua::Function,
     view: mlua::Function,
 }
-impl App {
+impl_fromlua_for!(LuaApplication);
+impl LuaApplication {
+    fn new( title: String, update: mlua::Function, view: mlua::Function ) -> Self {
+        LuaApplication {
+            title,
+            update,
+            view,
+        }
+    }
     fn title(&self) -> String {
         self.title.clone()
     }
@@ -667,6 +663,18 @@ impl App {
             Err(e) => panic!("{}", e),
         };
         value_to_element(val).unwrap()
+    }
+}
+impl mlua::UserData for LuaApplication {
+    fn add_methods<M: mlua::UserDataMethods<Self>>(methods: &mut M) {
+        methods.add_function_mut("run", |_lua, this: Self| {
+            match iced::application(LuaApplication::title, LuaApplication::update, LuaApplication::view)
+                .run_with(|| (this, iced::Task::none()))
+            {
+                Ok(_) => Ok(()),
+                Err(e) => Err(mlua::Error::RuntimeError(format!("{}", e))),
+            }
+        });
     }
 }
 

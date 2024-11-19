@@ -39,7 +39,7 @@ local function view ()
    :align_x(iced.Center())
 end
 
-iced.run( "A cooler counter", update, view )
+iced.application( "A cooler counter", update, view ):run()
 ```
 
 ## Embedding Usage
