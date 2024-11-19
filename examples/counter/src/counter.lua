@@ -18,4 +18,6 @@ local function view ()
    :align_x(iced.Center())
 end
 
-iced.application( "A cooler counter", update, view ):run()
+iced.application( "A cooler counter", update, view )
+:window_size( iced.size(300,500) )
+:run()

@@ -124,6 +124,10 @@ impl mlua::FromLua for LuaPadding {
     }
 }
 
+// Wrapper for Size
+lua_wrapper!(LuaSize, iced::Size);
+impl mlua::UserData for LuaSize {}
+
 // Wrapper for Alignment
 lua_wrapper!(clone LuaAlignment, iced::alignment::Alignment);
 impl mlua::UserData for LuaAlignment {}
@@ -509,6 +513,13 @@ pub fn exports_table(lua: &mlua::Lua) -> mlua::Result<mlua::Table> {
             Ok(LuaPadding(iced::Padding::new(val)))
         })?,
     )?;
+    // Size
+    iced.set(
+        "size",
+        lua.create_function(|_lua, (width,height): (f32,f32)| -> mlua::Result<LuaSize> {
+            Ok(LuaSize(iced::Size::new(width, height)))
+        })?,
+    )?;
     // Alignment
     iced.set(
         "Start",
@@ -632,11 +643,12 @@ pub fn exports_table(lua: &mlua::Lua) -> mlua::Result<mlua::Table> {
     Ok(iced)
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub struct LuaApplication {
     title: String,
     update: mlua::Function,
     view: mlua::Function,
+    window: iced_core::window::Settings,
 }
 impl_fromlua_for!(LuaApplication);
 impl LuaApplication {
@@ -645,6 +657,7 @@ impl LuaApplication {
             title,
             update,
             view,
+            window: iced::window::Settings::default(),
         }
     }
     fn title(&self) -> String {
@@ -667,9 +680,13 @@ impl LuaApplication {
 }
 impl mlua::UserData for LuaApplication {
     fn add_methods<M: mlua::UserDataMethods<Self>>(methods: &mut M) {
+        methods.add_function_mut("window_size", |_lua, (mut this, size): (Self, LuaSize)| {
+            this.window.size = size.0;
+            Ok(this)
+        });
         methods.add_function_mut("run", |_lua, this: Self| {
-            match iced::application(LuaApplication::title, LuaApplication::update, LuaApplication::view)
-                .run_with(|| (this, iced::Task::none()))
+            let app = iced::application(LuaApplication::title, LuaApplication::update, LuaApplication::view).window( this.window.clone() );
+            match app.run_with(|| (this, iced::Task::none()))
             {
                 Ok(_) => Ok(()),
                 Err(e) => Err(mlua::Error::RuntimeError(format!("{}", e))),
