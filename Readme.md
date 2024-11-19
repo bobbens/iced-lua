@@ -13,7 +13,8 @@ Install using luarocks with:
 $ luarocks install iced-lua
 ```
 
-You should now be able to `require "iced-lua"` from Lua. With this, we can now reproduce the counter example from iced in Lua.
+You should now be able to `require "iced-lua"` from Lua.
+With this, we can now reproduce the counter example from iced in Lua.
 
 ```lua
 local iced = require "iced_lua"
@@ -43,7 +44,8 @@ iced.run( "A cooler counter", update, view )
 
 ## Embedding Usage
 
-You will have to add the following dependencies. Note that there is no restriction on the version of Lua, so you are able to use any Lua feature version supported by mlua.
+You will have to add the following dependencies.
+Note that there is no restriction on the version of Lua, so you are able to use any Lua feature version supported by mlua.
 
 ```toml
 [dependencies]
@@ -56,6 +58,9 @@ Afterwards, you can simply use the following to load the library into a `mlua::L
 ```rust
     iced_lua::open_iced(&lua).unwrap();
 ```
+
+You will then be able to use the API from the `iced` global variable.
+If you instead wish to set the global yourself, you can access all the exports with `iced_lua::exports_table`.
 
 See [examples/counter](examples/counter) for the full example of embedding into a rust application.
 

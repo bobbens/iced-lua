@@ -472,7 +472,7 @@ fn value_to_element(
     }
 }
 
-pub fn iced_table(lua: &mlua::Lua) -> mlua::Result<mlua::Table> {
+pub fn exports_table(lua: &mlua::Lua) -> mlua::Result<mlua::Table> {
     let iced = lua.create_table()?;
     // Lengths
     iced.set(
@@ -669,7 +669,7 @@ impl App {
 
 #[cfg(not(feature = "module"))]
 pub fn open_iced(lua: &mlua::Lua) -> mlua::Result<()> {
-    let iced = iced_table(lua)?;
+    let iced = exports_table(lua)?;
     let globals = lua.globals();
     globals.set("iced", iced)?;
     Ok(())
@@ -678,5 +678,5 @@ pub fn open_iced(lua: &mlua::Lua) -> mlua::Result<()> {
 #[cfg(feature = "module")]
 #[mlua::lua_module]
 fn iced_lua(lua: &Lua) -> LuaResult<LuaTable> {
-    iced_table(lua)
+    exports_table(lua)
 }
